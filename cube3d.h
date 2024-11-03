@@ -6,7 +6,7 @@
 /*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:26:34 by ajamshid          #+#    #+#             */
-/*   Updated: 2024/11/01 14:23:53 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/03 00:22:05 by abdul-rashe      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,6 @@ typedef struct s_raycasting
 
 typedef struct
 {
-	t_map		*map_structure;
 	void		*mlx_ptr;
 	void		*win_ptr;
 	double		player_x;
@@ -116,9 +115,10 @@ typedef struct
 	int			map2[MAP_WIDTH][MAP_HEIGHT];
 	int			sky_color;
 	int			ground_color;
-
+	double		move_level;
 	t_texture	wall_texture[4];
 	t_image		img;
+	t_map		*map_structure;
 }				t_game;
 
 int				parse_cub_file(t_map *map, char *map_cub);
@@ -130,5 +130,6 @@ int				ft_atoi_base(unsigned int decimal);
 int				initialize_map(t_map *map, int fd);
 int				check_player_spawning_pos(t_map *map);
 int				parse_colors(t_map *map);
+int				*map_count(t_map *map);
 
 #endif

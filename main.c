@@ -6,7 +6,7 @@
 /*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 15:04:47 by abdul-rashe       #+#    #+#             */
-/*   Updated: 2024/11/02 00:31:26 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/03 01:18:54 by abdul-rashe      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,9 +109,11 @@ void	turn_right(t_game *game)
 
 void	move_player(t_game *game)
 {
-	double	move_speed;
+	double		move_speed;
+	static int	move_times = 1;
+	static int	move_dir = 1;
 
-	move_speed = 0.1;
+	move_speed = 0.05;
 	if (game->keys[119] || game->keys[115])
 		move_back_or_forward(game, move_speed);
 	if (game->keys[97] || game->keys[100])
@@ -120,6 +122,19 @@ void	move_player(t_game *game)
 		turn_left(game);
 	if (game->keys[0])
 		turn_right(game);
+	if (game->keys[97] || game->keys[100] || game->keys[119] || game->keys[115])
+	{
+		if (move_times == 8)
+			move_dir = -1;
+		if (move_times == 1)
+			move_dir = 1;
+		if (move_dir == -1)
+			move_times--;
+		if (move_dir == 1)
+			move_times++;
+		game->move_level = (double)move_times / 9;
+		printf("%f\n", game->move_level);
+	}
 }
 
 int	destroy_image_and_clean_exit(t_game *game)
@@ -281,6 +296,9 @@ int	find_wall_side_dist_and_height(t_raycasting *raycasting, t_game *game)
 		if (game->map[raycasting->map_x][raycasting->map_y] > '0')
 			hit = 1;
 	}
+	find_wall_line_height_and_dist(raycasting, game, side);
+	// if(hit == 1 && raycasting->wall_dist < 1)
+	// 	game->map[raycasting->map_x][raycasting->map_y] ='0';
 	return (side);
 }
 
@@ -289,10 +307,15 @@ double	find_draw_pos_wall_width(t_raycasting *raycasting, t_game *game,
 {
 	double	wall_width;
 
-	raycasting->draw_start = (-raycasting->line_height + SCREEN_HEIGHT) / 2;
+	// printf("%f \n", raycasting->wall_dist);
+	raycasting->draw_start = (-raycasting->line_height + SCREEN_HEIGHT) / 2
+		+ (int)(raycasting->wall_dist + raycasting->line_height / 5)
+		* game->move_level / 2;
 	if (raycasting->draw_start < 0)
 		raycasting->draw_start = 0;
-	raycasting->draw_end = (raycasting->line_height + SCREEN_HEIGHT) / 2;
+	raycasting->draw_end = (raycasting->line_height + SCREEN_HEIGHT) / 2
+		+ (int)(raycasting->wall_dist + raycasting->line_height / 5)
+		* game->move_level / 2;
 	if (raycasting->draw_end >= SCREEN_HEIGHT)
 		raycasting->draw_end = SCREEN_HEIGHT - 1;
 	if (side == 0)
@@ -340,12 +363,16 @@ void	prepare_writing_to_img(t_game *game, t_raycasting *raycasting,
 			set_pixel_color(game, x, y, game->sky_color);
 		if (y >= raycasting->draw_start && y <= raycasting->draw_end)
 		{
-			tex_y = (((y * 2 - SCREEN_HEIGHT + raycasting->line_height)
-						* raycasting->tex->height) / raycasting->line_height)
-				/ 2;
-			color = *(int *)(raycasting->tex->data + (tex_y
-						* raycasting->tex->size_line + tex_x
-						* (raycasting->tex->bpp / 8)));
+			tex_y = (((y * 2 - SCREEN_HEIGHT - (raycasting->wall_dist
+								+ raycasting->line_height / 5)
+							* game->move_level + raycasting->line_height) / 2)
+					* raycasting->tex->height / raycasting->line_height);
+			if (tex_y > raycasting->tex->height)
+				tex_y = raycasting->tex->height;
+			if (tex_y < 0)
+				tex_y = 0;
+			color = *(int *)(raycasting->tex->data + ((tex_y)
+						* (raycasting->tex->size_line) + tex_x * 4));
 			set_pixel_color(game, x, y, color);
 		}
 		if (y > raycasting->draw_end)
@@ -367,7 +394,6 @@ void	cast_rays_and_generate_image(t_game *game, t_raycasting *raycasting)
 		set_initial_values(raycasting, game, x);
 		set_distance_to_next_x_or_y(raycasting, game);
 		side = find_wall_side_dist_and_height(raycasting, game);
-		find_wall_line_height_and_dist(raycasting, game, side);
 		wall_width = find_draw_pos_wall_width(raycasting, game, side);
 		raycasting->tex = &game->wall_texture[find_tex_index(raycasting, side)];
 		tex_x = (int)(wall_width * (double)raycasting->tex->width);
@@ -378,53 +404,55 @@ void	cast_rays_and_generate_image(t_game *game, t_raycasting *raycasting)
 		prepare_writing_to_img(game, raycasting, tex_x, x);
 		x++;
 	}
+	// destroy_image_and_clean_exit(game);
 }
 
 int	main_loop(t_game *game)
 {
-	// int c;
 	t_raycasting	raycasting;
-	// double			x;
-	// double			y;
-	// double			cam_x;
-	// double			cam_y;
-	// double			i;
-	// double			j;
+	double			x;
+	double			y;
+	double			cam_x;
+	double			cam_y;
+	double			i;
+	double			j;
+	int				*map_co;
 
+	// int c;
 	// void *bird;
-	// x = 0;
-	// y = SCREEN_HEIGHT - 192;
+	x = 0;
+	y = SCREEN_HEIGHT - 192;
 	move_player(game);
 	// mlx_mouse_get_pos(game->mlx_ptr, game->win_ptr, &x, &y);
 	// ft_printf("%i  %i", x, y);
 	cast_rays_and_generate_image(game, &raycasting);
+	map_co = map_count(game->map_structure);
+	while (x < 192)
+	{
+		cam_x = 2 * (x) / 192.0 - 1;
+		y = SCREEN_HEIGHT - 192;
+		while (y < SCREEN_HEIGHT)
+		{
+			cam_y = 2 * (SCREEN_HEIGHT - y) / 192.0 - 1;
+			cam_y = -1.0 * cam_y;
+			i = game->player_x + 8 * cam_y;
+			j = game->player_y + 8 * cam_x;
+			if ((int)i < 0 || (int)j < 0 || ((int)i > (int)sizeof(map_co) - 1
+					/ 4 && (int)j > map_co[(int)i]))
+				set_pixel_color(game, x, y, 0xff000000);
+			else if (game->map[(int)i][(int)j] == '1')
+				set_pixel_color(game, x, y, 0xffffff);
+			else if ((int)((i - game->player_x) * (i - game->player_x) * 15 + (j
+						- game->player_y) * (j - game->player_y) * 15) == 1)
+				set_pixel_color(game, x, y, 0x000);
+			else
+				set_pixel_color(game, x, y, 0x00ff00);
+			y++;
+		}
+		x++;
+	}
 	mlx_put_image_to_window(game->mlx_ptr, game->win_ptr, game->img.img_ptr, 0,
 		0);
-
-	// while (x < 192)
-	// {
-	// 	cam_x = 2 * (x) / 192.0 - 1;
-	// 	printf("%f", cam_x);
-	// 	y = SCREEN_HEIGHT - 192;
-	// 	while (y < SCREEN_HEIGHT)
-	// 	{
-	// 		cam_y = 2 * (SCREEN_HEIGHT - y) / 192.0 - 1;
-	// 		cam_y = -1.0 * cam_y;
-	// 		i = game->player_x + 8 * cam_y;
-	// 		j = game->player_y + 8 * cam_x;
-	// 		// printf("%f i     %f j", i, j);
-	// 		if (game->map[(int)i][(int)j] == '1')
-	// 			mlx_pixel_put(game->mlx_ptr, game->win_ptr, x, y, 0xffffff);
-	// 		else if ((int)i == (int)game->player_x
-	// 			&& (int)j == (int)game->player_y)
-	// 			mlx_pixel_put(game->mlx_ptr, game->win_ptr, x, y, 0x000);
-	// 		else
-	// 			mlx_pixel_put(game->mlx_ptr, game->win_ptr, x, y, 0x00ff00);
-	// 		y++;
-	// 	}
-	// 	x++;
-	// }
-
 	usleep(20000);
 	return (0);
 }

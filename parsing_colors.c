@@ -6,7 +6,7 @@
 /*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 23:05:02 by abdul-rashe       #+#    #+#             */
-/*   Updated: 2024/10/30 23:08:49 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/03 00:21:49 by abdul-rashe      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,4 +51,27 @@ int	parse_colors(t_map *map)
 	free_table(sky);
 	free_table(ground);
 	return (0);
+}
+
+
+int	*map_count(t_map *map)
+{
+	int	i;
+	int	j;
+	int	*map_count;
+
+	i = 0;
+	while (map->map_2d[i])
+		i++;
+	map_count = (int *)malloc(sizeof(int) * i);
+	i = 0;
+	while (map->map_2d[i])
+	{
+		j = 0;
+		while (map->map_2d[i][j])
+			j++;
+		map_count[i] = j;
+		i++;
+	}
+	return (map_count);
 }
