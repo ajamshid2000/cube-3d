@@ -6,7 +6,7 @@
 /*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:26:34 by ajamshid          #+#    #+#             */
-/*   Updated: 2024/11/03 00:22:05 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/03 02:36:00 by abdul-rashe      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,7 @@ typedef struct
 	int			sky_color;
 	int			ground_color;
 	double		move_level;
+	int			ESC;
 	t_texture	wall_texture[4];
 	t_image		img;
 	t_map		*map_structure;

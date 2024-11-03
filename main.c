@@ -6,7 +6,7 @@
 /*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 15:04:47 by abdul-rashe       #+#    #+#             */
-/*   Updated: 2024/11/03 01:18:54 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/03 02:44:23 by abdul-rashe      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,13 +73,16 @@ void	move_left_or_right(t_game *game, double move_speed)
 					* cos(-M_PI / 2)) * (1 * move_speed);
 }
 
-void	turn_left(t_game *game)
+void	turn_left(t_game *game, double rot_s)
 {
 	double	old_dir_x;
 	double	old_plane_x;
 	double	rot_speed;
 
-	rot_speed = 0.05;
+	if (rot_s)
+		rot_speed = rot_s;
+	else
+		rot_speed = 0.05;
 	old_dir_x = game->dir_x;
 	game->dir_x = game->dir_x * cos(rot_speed) - game->dir_y * sin(rot_speed);
 	game->dir_y = old_dir_x * sin(rot_speed) + game->dir_y * cos(rot_speed);
@@ -90,13 +93,16 @@ void	turn_left(t_game *game)
 		* cos(rot_speed);
 }
 
-void	turn_right(t_game *game)
+void	turn_right(t_game *game, double rot_s)
 {
 	double	old_dir_x;
 	double	old_plane_x;
 	double	rot_speed;
 
-	rot_speed = 0.05;
+	if (rot_s)
+		rot_speed = rot_s;
+	else
+		rot_speed = 0.05;
 	old_dir_x = game->dir_x;
 	game->dir_x = game->dir_x * cos(-rot_speed) - game->dir_y * sin(-rot_speed);
 	game->dir_y = old_dir_x * sin(-rot_speed) + game->dir_y * cos(-rot_speed);
@@ -112,16 +118,25 @@ void	move_player(t_game *game)
 	double		move_speed;
 	static int	move_times = 1;
 	static int	move_dir = 1;
+	int			a;
+	int			b;
 
+	if (!game->ESC)
+	{
+		mlx_mouse_get_pos(game->mlx_ptr, game->win_ptr, &a, &b);
+		a = a - 400;
+	}
+	else
+		a = 0;
 	move_speed = 0.05;
 	if (game->keys[119] || game->keys[115])
 		move_back_or_forward(game, move_speed);
 	if (game->keys[97] || game->keys[100])
 		move_left_or_right(game, move_speed);
-	if (game->keys[1])
-		turn_left(game);
-	if (game->keys[0])
-		turn_right(game);
+	if (a < 0 || game->keys[1])
+		turn_left(game, fabs((double)a) / 100);
+	if (a > 0 || game->keys[0] )
+		turn_right(game, fabs((double)a) / 100);
 	if (game->keys[97] || game->keys[100] || game->keys[119] || game->keys[115])
 	{
 		if (move_times == 8)
@@ -168,7 +183,15 @@ int	key_press(int key, t_game *game)
 	if (key == 65361)
 		game->keys[1] = 1;
 	if (key == 65307)
-		destroy_image_and_clean_exit(game);
+	{
+		if (game->ESC == 0)
+		{
+			game->ESC = 1;
+			mlx_mouse_show(game->mlx_ptr, game->win_ptr);
+		}
+		else
+			destroy_image_and_clean_exit(game);
+	}
 	return (0);
 }
 
@@ -420,12 +443,13 @@ int	main_loop(t_game *game)
 
 	// int c;
 	// void *bird;
+	move_player(game);
+	if (!game->ESC)
+		mlx_mouse_move(game->mlx_ptr, game->win_ptr, SCREEN_HEIGHT / 2,
+			SCREEN_WIDTH / 2);
+	cast_rays_and_generate_image(game, &raycasting);
 	x = 0;
 	y = SCREEN_HEIGHT - 192;
-	move_player(game);
-	// mlx_mouse_get_pos(game->mlx_ptr, game->win_ptr, &x, &y);
-	// ft_printf("%i  %i", x, y);
-	cast_rays_and_generate_image(game, &raycasting);
 	map_co = map_count(game->map_structure);
 	while (x < 192)
 	{
@@ -495,10 +519,12 @@ int	main(void)
 	game.mlx_ptr = mlx_init();
 	game.win_ptr = mlx_new_window(game.mlx_ptr, SCREEN_WIDTH, SCREEN_HEIGHT,
 			"CUBE 3D");
+	mlx_mouse_hide(game.mlx_ptr, game.win_ptr);
 	game.img.img_ptr = mlx_new_image(game.mlx_ptr, SCREEN_WIDTH, SCREEN_HEIGHT);
 	game.img.data = mlx_get_data_addr(game.img.img_ptr, &game.img.bpp,
 			&game.img.size_line, &game.img.endian);
 	load_textures(&game, &map);
+	game.ESC = 0;
 	game.map = map.map_2d;
 	game.sky_color = map.sky_hexa;
 	game.ground_color = map.ground_hexa;
