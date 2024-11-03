@@ -6,7 +6,7 @@
 /*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 15:04:47 by abdul-rashe       #+#    #+#             */
-/*   Updated: 2024/11/03 02:44:23 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/03 13:14:49 by abdul-rashe      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,9 +134,9 @@ void	move_player(t_game *game)
 	if (game->keys[97] || game->keys[100])
 		move_left_or_right(game, move_speed);
 	if (a < 0 || game->keys[1])
-		turn_left(game, fabs((double)a) / 100);
+		turn_left(game, (double)a/10);
 	if (a > 0 || game->keys[0] )
-		turn_right(game, fabs((double)a) / 100);
+		turn_right(game,(double)a/10);
 	if (game->keys[97] || game->keys[100] || game->keys[119] || game->keys[115])
 	{
 		if (move_times == 8)
@@ -147,9 +147,9 @@ void	move_player(t_game *game)
 			move_times--;
 		if (move_dir == 1)
 			move_times++;
-		game->move_level = (double)move_times / 9;
-		printf("%f\n", game->move_level);
 	}
+			game->move_level = (double)move_times / 9;
+		printf("%f\n", game->move_level);
 }
 
 int	destroy_image_and_clean_exit(t_game *game)
@@ -319,9 +319,6 @@ int	find_wall_side_dist_and_height(t_raycasting *raycasting, t_game *game)
 		if (game->map[raycasting->map_x][raycasting->map_y] > '0')
 			hit = 1;
 	}
-	find_wall_line_height_and_dist(raycasting, game, side);
-	// if(hit == 1 && raycasting->wall_dist < 1)
-	// 	game->map[raycasting->map_x][raycasting->map_y] ='0';
 	return (side);
 }
 
@@ -329,6 +326,7 @@ double	find_draw_pos_wall_width(t_raycasting *raycasting, t_game *game,
 		int side)
 {
 	double	wall_width;
+	(void)side;
 
 	// printf("%f \n", raycasting->wall_dist);
 	raycasting->draw_start = (-raycasting->line_height + SCREEN_HEIGHT) / 2
@@ -417,6 +415,9 @@ void	cast_rays_and_generate_image(t_game *game, t_raycasting *raycasting)
 		set_initial_values(raycasting, game, x);
 		set_distance_to_next_x_or_y(raycasting, game);
 		side = find_wall_side_dist_and_height(raycasting, game);
+			find_wall_line_height_and_dist(raycasting, game, side);
+	// if(hit == 1 && raycasting->wall_dist < 1)
+	// 	game->map[raycasting->map_x][raycasting->map_y] ='0';
 		wall_width = find_draw_pos_wall_width(raycasting, game, side);
 		raycasting->tex = &game->wall_texture[find_tex_index(raycasting, side)];
 		tex_x = (int)(wall_width * (double)raycasting->tex->width);
@@ -475,6 +476,8 @@ int	main_loop(t_game *game)
 		}
 		x++;
 	}
+	x=0;
+free((void*)map_co);
 	mlx_put_image_to_window(game->mlx_ptr, game->win_ptr, game->img.img_ptr, 0,
 		0);
 	usleep(20000);
