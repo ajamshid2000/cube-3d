@@ -6,7 +6,7 @@
 /*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/03 16:13:32 by abdul-rashe       #+#    #+#             */
-/*   Updated: 2024/11/04 01:16:43 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/04 17:15:40 by abdul-rashe      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,18 +46,13 @@ void	check_texture_init_success(t_game *game)
 				&game->wall_tex[i].endian);
 		i++;
 	}
-	printf("hello\n");
 }
 
 void	load_textures(t_game *game, t_map *map)
 {
-	printf("'%s' '%s' '%s' '%s'\n", map->north_wall[0], map->south_wall[0],
-		map->east_wall[0], map->west_wall[0]);
 	game->wall_tex[0].img_ptr = mlx_xpm_file_to_image(game->mlx_ptr,
 			map->north_wall[0], &game->wall_tex[0].width,
 			&game->wall_tex[0].height);
-	printf("'%s' '%s' '%s' '%s'\n", map->north_wall[0], map->south_wall[0],
-		map->east_wall[0], map->west_wall[0]);
 	game->wall_tex[1].img_ptr = mlx_xpm_file_to_image(game->mlx_ptr,
 			map->south_wall[0], &game->wall_tex[1].width,
 			&game->wall_tex[1].height);
@@ -67,8 +62,6 @@ void	load_textures(t_game *game, t_map *map)
 	game->wall_tex[3].img_ptr = mlx_xpm_file_to_image(game->mlx_ptr,
 			map->east_wall[0], &game->wall_tex[3].width,
 			&game->wall_tex[3].height);
-	printf("'%s' '%s' '%s' '%s'\n", map->north_wall[0], map->south_wall[0],
-		map->east_wall[0], map->west_wall[0]);
 	check_texture_init_success(game);
 }
 

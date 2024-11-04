@@ -6,7 +6,7 @@
 /*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 19:29:28 by ajamshid          #+#    #+#             */
-/*   Updated: 2024/11/04 01:10:14 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/04 22:32:23 by abdul-rashe      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,20 +17,21 @@ int	set_map_line(t_map *map, char *line, int i)
 {
 	static int	j = 0;
 
-	if (!ft_strncmp(&line[i], "1", 1) || !ft_strncmp(&line[i], "0", 1))
+	if (!ft_strncmp(&line[i], "1", 1) || !ft_strncmp(&line[i], "0", 1) || i > 0)
 	{
 		if (j == 1)
 			return (1);
-		if (map->map == NULL)
+		if (!map->map && (!ft_strncmp(&line[i], "1", 1) || !ft_strncmp(&line[i],
+					"0", 1)))
 			map->map = ft_strdup(line);
-		else
+		else if (map->map)
 			map->map = ft_strjoin_free(map->map, line);
 		if (!map->map)
 			return (1);
 	}
-	else if (map->map && line[i] == '\n')
+	else if (map->map && i == 0 && line[i] == '\n')
 		j = 1;
-	else if (line[i] == '\n')
+	else if (!map->map && line[i] == '\n')
 		return (0);
 	else
 		return (1);
