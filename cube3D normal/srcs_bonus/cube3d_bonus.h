@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cube3d.h                                           :+:      :+:    :+:   */
+/*   cube3d_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:26:34 by ajamshid          #+#    #+#             */
-/*   Updated: 2024/11/03 14:33:28 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/04 01:20:09 by abdul-rashe      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CUBE3D_H
-# define CUBE3D_H
+#ifndef CUBE3D_BONUS_H
+# define CUBE3D_BONUS_H
 
 # include "ft_printf.h"
 # include "libft.h"
@@ -31,7 +31,7 @@
 # define MAP_WIDTH 24
 # define MAP_HEIGHT 24
 
-typedef struct
+typedef struct s_texture
 {
 	void		*img_ptr;
 	char		*data;
@@ -42,7 +42,7 @@ typedef struct
 	int			endian;
 }				t_texture;
 
-typedef struct
+typedef struct s_image
 {
 	void		*img_ptr;
 	char		*data;
@@ -100,7 +100,7 @@ typedef struct s_raycasting
 
 }				t_raycasting;
 
-typedef struct
+typedef struct s_game
 {
 	void		*mlx_ptr;
 	void		*win_ptr;
@@ -116,9 +116,10 @@ typedef struct
 	int			sky_color;
 	int			ground_color;
 	double		move_level;
-	int			ESC;
+	int			esc;
 	int			*map_co;
-	t_texture	wall_texture[4];
+
+	t_texture	wall_tex[4];
 	t_image		img;
 	t_map		*map_structure;
 }				t_game;
@@ -133,6 +134,33 @@ int				initialize_map(t_map *map, int fd);
 int				check_player_spawning_pos(t_map *map);
 int				parse_colors(t_map *map);
 int				*map_count(t_map *map);
+void			initialize_game_vars(t_game *game, t_map *map);
+int				destroy_image_and_clean_exit(t_game *game);
+void			init_player_dir(t_game *game, t_map *map);
+void			move_player(t_game *game);
+void			set_initial_values(t_raycasting *raycasting, t_game *game,
+					int x);
+int				key_press(int key, t_game *game);
+int				key_release(int key, t_game *game);
+void			move_back_or_forward(t_game *game, double move_speed);
+void			move_left_or_right(t_game *game, double move_speed);
+void			turn_left(t_game *game, double rot_s);
+void			turn_right(t_game *game, double rot_s);
+void			set_pixel_color(t_game *game, int x, int y, int color);
+void			check_texture_init_success(t_game *game);
+void			load_textures(t_game *game, t_map *map);
+void			set_distance_to_next_x_or_y(t_raycasting *raycasting,
+					t_game *game);
+void			find_wall_line_height_and_dist(t_raycasting *raycasting,
+					t_game *game, int side);
+int				find_wall_side_dist_and_height(t_raycasting *raycasting,
+					t_game *game);
+double			find_draw_pos_wall_width(t_raycasting *raycasting, t_game *game,
+					int side);
+int				find_tex_index(t_raycasting *raycasting, int side);
+void			prepare_writing_to_img(t_game *game, t_raycasting *raycasting,
+					int tex_x, int x);
+void			check_if_all_is_set(t_map *map);
 
 #endif
 
@@ -247,7 +275,7 @@ int				*map_count(t_map *map);
 // 	int			a;
 // 	int			b;
 
-// 	if (!game->ESC)
+// 	if (!game->esc)
 // 	{
 // 		mlx_mouse_get_pos(game->mlx_ptr, game->win_ptr, &a, &b);
 // 		a = a - 400;
@@ -280,14 +308,14 @@ int				*map_count(t_map *map);
 
 // int	destroy_image_and_clean_exit(t_game *game)
 // {
-// 	if (game->wall_texture[0].img_ptr)
-// 		mlx_destroy_image(game->mlx_ptr, game->wall_texture[0].img_ptr);
-// 	if (game->wall_texture[1].img_ptr)
-// 		mlx_destroy_image(game->mlx_ptr, game->wall_texture[1].img_ptr);
-// 	if (game->wall_texture[2].img_ptr)
-// 		mlx_destroy_image(game->mlx_ptr, game->wall_texture[2].img_ptr);
-// 	if (game->wall_texture[3].img_ptr)
-// 		mlx_destroy_image(game->mlx_ptr, game->wall_texture[3].img_ptr);
+// 	if (game->wall_tex[0].img_ptr)
+// 		mlx_destroy_image(game->mlx_ptr, game->wall_tex[0].img_ptr);
+// 	if (game->wall_tex[1].img_ptr)
+// 		mlx_destroy_image(game->mlx_ptr, game->wall_tex[1].img_ptr);
+// 	if (game->wall_tex[2].img_ptr)
+// 		mlx_destroy_image(game->mlx_ptr, game->wall_tex[2].img_ptr);
+// 	if (game->wall_tex[3].img_ptr)
+// 		mlx_destroy_image(game->mlx_ptr, game->wall_tex[3].img_ptr);
 // 	if (game->img.img_ptr)
 // 		mlx_destroy_image(game->mlx_ptr, game->img.img_ptr);
 // 	if (game->win_ptr)
@@ -310,9 +338,9 @@ int				*map_count(t_map *map);
 // 		game->keys[1] = 1;
 // 	if (key == 65307)
 // 	{
-// 		if (game->ESC == 0)
+// 		if (game->esc == 0)
 // 		{
-// 			game->ESC = 1;
+// 			game->esc = 1;
 // 			mlx_mouse_show(game->mlx_ptr, game->win_ptr);
 // 		}
 // 		else
@@ -339,33 +367,33 @@ int				*map_count(t_map *map);
 // 	i = 0;
 // 	while (i < 4)
 // 	{
-// 		if (!game->wall_texture[i].img_ptr)
+// 		if (!game->wall_tex[i].img_ptr)
 // 		{
 // 			printf("Error loading texture,please make sure the name is ");
 // 			ft_printf("correct or there are not spaces after the adress\n");
 // 			destroy_image_and_clean_exit(game);
 // 		}
-// 		game->wall_texture[i].data = mlx_get_data_addr(game->wall_texture[i].img_ptr,
-// 				&game->wall_texture[i].bpp, &game->wall_texture[i].size_line,
-// 				&game->wall_texture[i].endian);
+// 		game->wall_tex[i].data = mlx_get_data_addr(game->wall_tex[i].img_ptr,
+// 				&game->wall_tex[i].bpp, &game->wall_tex[i].size_line,
+// 				&game->wall_tex[i].endian);
 // 		i++;
 // 	}
 // }
 
 // void	load_textures(t_game *game, t_map *map)
 // {
-// 	game->wall_texture[0].img_ptr = mlx_xpm_file_to_image(game->mlx_ptr,
-// 			map->north_wall[0], &game->wall_texture[0].width,
-// 			&game->wall_texture[0].height);
-// 	game->wall_texture[1].img_ptr = mlx_xpm_file_to_image(game->mlx_ptr,
-// 			map->south_wall[0], &game->wall_texture[1].width,
-// 			&game->wall_texture[1].height);
-// 	game->wall_texture[2].img_ptr = mlx_xpm_file_to_image(game->mlx_ptr,
-// 			map->west_wall[0], &game->wall_texture[2].width,
-// 			&game->wall_texture[2].height);
-// 	game->wall_texture[3].img_ptr = mlx_xpm_file_to_image(game->mlx_ptr,
-// 			map->east_wall[0], &game->wall_texture[3].width,
-// 			&game->wall_texture[3].height);
+// 	game->wall_tex[0].img_ptr = mlx_xpm_file_to_image(game->mlx_ptr,
+// 			map->north_wall[0], &game->wall_tex[0].width,
+// 			&game->wall_tex[0].height);
+// 	game->wall_tex[1].img_ptr = mlx_xpm_file_to_image(game->mlx_ptr,
+// 			map->south_wall[0], &game->wall_tex[1].width,
+// 			&game->wall_tex[1].height);
+// 	game->wall_tex[2].img_ptr = mlx_xpm_file_to_image(game->mlx_ptr,
+// 			map->west_wall[0], &game->wall_tex[2].width,
+// 			&game->wall_tex[2].height);
+// 	game->wall_tex[3].img_ptr = mlx_xpm_file_to_image(game->mlx_ptr,
+// 			map->east_wall[0], &game->wall_tex[3].width,
+// 			&game->wall_tex[3].height);
 // 	check_texture_init_success(game);
 // }
 
@@ -545,12 +573,12 @@ int				*map_count(t_map *map);
 // 	// if(hit == 1 && raycasting->wall_dist < 1)
 // 	// 	game->map[raycasting->map_x][raycasting->map_y] ='0';
 // 		wall_width = find_draw_pos_wall_width(raycasting, game, side);
-// 		raycasting->tex = &game->wall_texture[find_tex_index(raycasting, side)];
+// 		raycasting->tex = &game->wall_tex[find_tex_index(raycasting, side)];
 // 		tex_x = (int)(wall_width * (double)raycasting->tex->width);
 // 		if (side == 0 && raycasting->ray_dir_x > 0)
-// 			tex_x = game->wall_texture[0].width - tex_x - 1;
+// 			tex_x = game->wall_tex[0].width - tex_x - 1;
 // 		if (side == 1 && raycasting->ray_dir_y < 0)
-// 			tex_x = game->wall_texture[0].width - tex_x - 1;
+// 			tex_x = game->wall_tex[0].width - tex_x - 1;
 // 		prepare_writing_to_img(game, raycasting, tex_x, x);
 // 		x++;
 // 	}
@@ -571,7 +599,7 @@ int				*map_count(t_map *map);
 // 	// int c;
 // 	// void *bird;
 // 	move_player(game);
-// 	if (!game->ESC)
+// 	if (!game->esc)
 // 		mlx_mouse_move(game->mlx_ptr, game->win_ptr, SCREEN_HEIGHT / 2,
 // 			SCREEN_WIDTH / 2);
 // 	cast_rays_and_generate_image(game, &raycasting);
@@ -651,7 +679,7 @@ int				*map_count(t_map *map);
 // 	game.img.data = mlx_get_data_addr(game.img.img_ptr, &game.img.bpp,
 // 			&game.img.size_line, &game.img.endian);
 // 	load_textures(&game, &map);
-// 	game.ESC = 0;
+// 	game.esc = 0;
 // 	game.map = map.map_2d;
 // 	game.sky_color = map.sky_hexa;
 // 	game.ground_color = map.ground_hexa;

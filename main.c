@@ -6,7 +6,7 @@
 /*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 15:04:47 by abdul-rashe       #+#    #+#             */
-/*   Updated: 2024/11/03 13:14:49 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/03 22:01:39 by abdul-rashe      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,9 +134,9 @@ void	move_player(t_game *game)
 	if (game->keys[97] || game->keys[100])
 		move_left_or_right(game, move_speed);
 	if (a < 0 || game->keys[1])
-		turn_left(game, (double)a/10);
-	if (a > 0 || game->keys[0] )
-		turn_right(game,(double)a/10);
+		turn_left(game, fabs((double)a / 30.0));
+	if (a > 0 || game->keys[0])
+		turn_right(game, fabs((double)a / 30.0));
 	if (game->keys[97] || game->keys[100] || game->keys[119] || game->keys[115])
 	{
 		if (move_times == 8)
@@ -148,8 +148,8 @@ void	move_player(t_game *game)
 		if (move_dir == 1)
 			move_times++;
 	}
-			game->move_level = (double)move_times / 9;
-		printf("%f\n", game->move_level);
+	game->move_level = (double)move_times / 9;
+	printf("%f\n", game->move_level);
 }
 
 int	destroy_image_and_clean_exit(t_game *game)
@@ -170,6 +170,7 @@ int	destroy_image_and_clean_exit(t_game *game)
 		mlx_destroy_display(game->mlx_ptr);
 	if (game->mlx_ptr)
 		free(game->mlx_ptr);
+	free((void *)game->map_co);
 	clean_exit(game->map_structure);
 	return (0);
 }
@@ -216,7 +217,7 @@ void	check_texture_init_success(t_game *game)
 		if (!game->wall_texture[i].img_ptr)
 		{
 			printf("Error loading texture,please make sure the name is ");
-			ft_printf("correct or there are not spaces after the adress\n");
+			printf("correct or there are not spaces after the adress\n");
 			destroy_image_and_clean_exit(game);
 		}
 		game->wall_texture[i].data = mlx_get_data_addr(game->wall_texture[i].img_ptr,
@@ -326,8 +327,8 @@ double	find_draw_pos_wall_width(t_raycasting *raycasting, t_game *game,
 		int side)
 {
 	double	wall_width;
-	(void)side;
 
+	(void)side;
 	// printf("%f \n", raycasting->wall_dist);
 	raycasting->draw_start = (-raycasting->line_height + SCREEN_HEIGHT) / 2
 		+ (int)(raycasting->wall_dist + raycasting->line_height / 5)
@@ -415,9 +416,9 @@ void	cast_rays_and_generate_image(t_game *game, t_raycasting *raycasting)
 		set_initial_values(raycasting, game, x);
 		set_distance_to_next_x_or_y(raycasting, game);
 		side = find_wall_side_dist_and_height(raycasting, game);
-			find_wall_line_height_and_dist(raycasting, game, side);
-	// if(hit == 1 && raycasting->wall_dist < 1)
-	// 	game->map[raycasting->map_x][raycasting->map_y] ='0';
+		find_wall_line_height_and_dist(raycasting, game, side);
+		// if(hit == 1 && raycasting->wall_dist < 1)
+		// 	game->map[raycasting->map_x][raycasting->map_y] ='0';
 		wall_width = find_draw_pos_wall_width(raycasting, game, side);
 		raycasting->tex = &game->wall_texture[find_tex_index(raycasting, side)];
 		tex_x = (int)(wall_width * (double)raycasting->tex->width);
@@ -440,7 +441,6 @@ int	main_loop(t_game *game)
 	double			cam_y;
 	double			i;
 	double			j;
-	int				*map_co;
 
 	// int c;
 	// void *bird;
@@ -451,7 +451,6 @@ int	main_loop(t_game *game)
 	cast_rays_and_generate_image(game, &raycasting);
 	x = 0;
 	y = SCREEN_HEIGHT - 192;
-	map_co = map_count(game->map_structure);
 	while (x < 192)
 	{
 		cam_x = 2 * (x) / 192.0 - 1;
@@ -462,8 +461,8 @@ int	main_loop(t_game *game)
 			cam_y = -1.0 * cam_y;
 			i = game->player_x + 8 * cam_y;
 			j = game->player_y + 8 * cam_x;
-			if ((int)i < 0 || (int)j < 0 || ((int)i > (int)sizeof(map_co) - 1
-					/ 4 && (int)j > map_co[(int)i]))
+			if ((int)i < 0 || (int)j < 0 || ((int)i > (int)sizeof(game->map_co)
+					- 1 / 4 && (int)j > game->map_co[(int)i]))
 				set_pixel_color(game, x, y, 0xff000000);
 			else if (game->map[(int)i][(int)j] == '1')
 				set_pixel_color(game, x, y, 0xffffff);
@@ -476,8 +475,7 @@ int	main_loop(t_game *game)
 		}
 		x++;
 	}
-	x=0;
-free((void*)map_co);
+	x = 0;
 	mlx_put_image_to_window(game->mlx_ptr, game->win_ptr, game->img.img_ptr, 0,
 		0);
 	usleep(20000);
@@ -512,29 +510,46 @@ void	manage_player_dir(t_game *game, t_map *map)
 	}
 }
 
+void	initialize_game_vars(t_game *game, t_map *map)
+{
+	game->ESC = 0;
+	game->map_structure = map;
+	game->map = map->map_2d;
+	game->sky_color = map->sky_hexa;
+	game->ground_color = map->ground_hexa;
+	game->player_x = map->player_pos_x + 0.5;
+	game->player_y = map->player_pos_y + 0.5;
+	ft_memset(game->keys, 0, sizeof(game->keys));
+	manage_player_dir(game, map);
+	game->map_co = map_count(game->map_structure);
+	if (!game->map_co)
+		clean_exit(map);
+}
+
 int	main(void)
 {
 	t_map	map;
 	t_game	game;
 
 	parse_cub_file(&map, "./map.cub");
-	game.map_structure = &map;
+	initialize_game_vars(&game, &map);
 	game.mlx_ptr = mlx_init();
+	if (!game.mlx_ptr)
+		destroy_image_and_clean_exit(&game);
 	game.win_ptr = mlx_new_window(game.mlx_ptr, SCREEN_WIDTH, SCREEN_HEIGHT,
 			"CUBE 3D");
-	mlx_mouse_hide(game.mlx_ptr, game.win_ptr);
+	if (!game.win_ptr)
+		destroy_image_and_clean_exit(&game);
 	game.img.img_ptr = mlx_new_image(game.mlx_ptr, SCREEN_WIDTH, SCREEN_HEIGHT);
+	if (!game.img.img_ptr)
+		destroy_image_and_clean_exit(&game);
 	game.img.data = mlx_get_data_addr(game.img.img_ptr, &game.img.bpp,
 			&game.img.size_line, &game.img.endian);
+	if (!game.img.data)
+		destroy_image_and_clean_exit(&game);
+	mlx_mouse_move(game.mlx_ptr, game.win_ptr, SCREEN_HEIGHT / 2, SCREEN_WIDTH
+		/ 2);
 	load_textures(&game, &map);
-	game.ESC = 0;
-	game.map = map.map_2d;
-	game.sky_color = map.sky_hexa;
-	game.ground_color = map.ground_hexa;
-	game.player_x = map.player_pos_x + 0.5;
-	game.player_y = map.player_pos_y + 0.5;
-	manage_player_dir(&game, &map);
-	ft_memset(game.keys, 0, sizeof(game.keys));
 	mlx_hook(game.win_ptr, KeyPress, KeyPressMask, key_press, &game);
 	mlx_hook(game.win_ptr, KeyRelease, KeyReleaseMask, key_release, &game);
 	mlx_hook(game.win_ptr, 17, 0, destroy_image_and_clean_exit, &game);

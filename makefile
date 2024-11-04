@@ -1,4 +1,4 @@
-NAME = raycasting
+NAME = cube3D_bonus
 CFLAGS = -Wall -Wextra -Werror -g3
 MLXFLAGS = -L ./minilibx-linux -lmlx -lXext -lX11 -O3
 INCLUDES = -I ./minilibx-linux -I ./libftprintf -I ./libft
