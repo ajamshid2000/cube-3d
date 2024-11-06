@@ -12,24 +12,6 @@
 
 #include "get_next_line.h"
 
-char	*ft_strchr(const char *s, int c)
-{
-	unsigned char	*ss;
-	unsigned char	cc;
-
-	if (!s)
-		return (NULL);
-	ss = (unsigned char *)s;
-	cc = (unsigned char)c;
-	while (*ss != '\0')
-	{
-		if (*ss == cc)
-			return ((char *)ss);
-		ss++;
-	}
-	return (NULL);
-}
-
 size_t	ft_strlen(const char *s)
 {
 	int	i;

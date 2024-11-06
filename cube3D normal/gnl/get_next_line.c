@@ -12,6 +12,23 @@
 
 #include "get_next_line.h"
 
+char	*ft_line(char *stored, int i)
+{
+	int		j;
+	char	*s;
+
+	j = 0;
+	s = ft_strdup(stored);
+	ft_bzero(&s[i + 1]);
+	while (stored[j + i + 1] != '\0')
+	{
+		stored[j] = stored[j + i + 1];
+		j++;
+	}
+	ft_bzero(stored + j);
+	return (s);
+}
+
 char	*ft_split_line(char **real_stored)
 {
 	int		i;
