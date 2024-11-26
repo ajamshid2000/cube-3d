@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting_two.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
+/*   By: ajamshid <ajamshid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 00:33:11 by abdul-rashe       #+#    #+#             */
-/*   Updated: 2024/11/04 00:42:29 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/17 14:18:37 by ajamshid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
+/*   By: ajamshid <ajamshid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 15:04:47 by abdul-rashe       #+#    #+#             */
-/*   Updated: 2024/11/04 01:19:30 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/26 19:58:39 by ajamshid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,39 +30,40 @@ void	cast_rays_and_generate_image(t_game *game, t_raycasting *raycasting)
 		raycasting->tex = &game->wall_tex[find_tex_index(raycasting, side)];
 		tex_x = (int)(wall_width * (double)raycasting->tex->width);
 		if (side == 0 && raycasting->ray_dir_x > 0)
-			tex_x = game->wall_tex[0].width - tex_x - 1;
+			tex_x = raycasting->tex->width - tex_x - 1;
 		if (side == 1 && raycasting->ray_dir_y < 0)
-			tex_x = game->wall_tex[0].width - tex_x - 1;
+			tex_x = raycasting->tex->width - tex_x - 1;
 		prepare_writing_to_img(game, raycasting, tex_x, x);
 		x++;
 	}
 }
 
-void	calculate_and_draw_minimap(t_game *game, double x, double y)
+void	calculate_and_draw_minimap(t_game *game, double x, double y,
+		double cam_x)
 {
 	double	cam_y;
 	double	i;
 	double	j;
-	double	cam_x;
 
 	cam_x = 2 * (x) / 192.0 - 1;
-	y = SCREEN_HEIGHT - 192;
 	while (y < SCREEN_HEIGHT)
 	{
 		cam_y = 2 * (SCREEN_HEIGHT - y) / 192.0 - 1;
 		cam_y = -1.0 * cam_y;
 		i = game->player_x + 8 * cam_y;
 		j = game->player_y + 8 * cam_x;
-		if ((int)i < 0 || (int)j < 0 || ((int)i > (int) sizeof(game->map_co) - 1
-				/ 4 && (int)j > game->map_co[(int)i]))
-			set_pixel_color(game, x, y, 0xff000000);
+		if (i < 0.0 || j < 0.0 || (int)i - 9 > ((int) sizeof(game->map_co))
+			|| (int)j > game->map_co[(int)i])
+			set_pixel_color(game, x, y, 0x666666);
 		else if (game->map[(int)i][(int)j] == '1')
 			set_pixel_color(game, x, y, 0xffffff);
 		else if ((int)((i - game->player_x) * (i - game->player_x) * 15 + (j
 				- game->player_y) * (j - game->player_y) * 15) == 1)
-			set_pixel_color(game, x, y, 0x000);
-		else
+			set_pixel_color(game, x, y, 0x0);
+		else if (game->map[(int)i][(int)j] == '0')
 			set_pixel_color(game, x, y, 0x00ff00);
+		else
+			set_pixel_color(game, x, y, 0x0);
 		y++;
 	}
 }
@@ -82,7 +83,7 @@ int	main_loop(t_game *game)
 	y = SCREEN_HEIGHT - 192;
 	while (x < 192)
 	{
-		calculate_and_draw_minimap(game, x, y);
+		calculate_and_draw_minimap(game, x, y, 0.0);
 		x++;
 	}
 	x = 0;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cube3d_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
+/*   By: ajamshid <ajamshid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:26:34 by ajamshid          #+#    #+#             */
-/*   Updated: 2024/11/04 01:20:09 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/26 19:43:43 by ajamshid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,8 @@ typedef struct s_map
 	int			player_pos_x;
 	int			player_pos_y;
 
+	int			map_last;
+
 	int			cub_fd;
 
 }				t_map;
@@ -118,6 +120,8 @@ typedef struct s_game
 	double		move_level;
 	int			esc;
 	int			*map_co;
+	int			mouse_x;
+	int			mouse_y;
 
 	t_texture	wall_tex[4];
 	t_image		img;
@@ -129,8 +133,8 @@ char			*get_next_line(int fd);
 void			clean_exit(t_map *map);
 int				free_table(char **table);
 char			*ft_strjoin_free(char const *s1, char const *s2);
-int				ft_atoi_base(unsigned int decimal);
 int				initialize_map(t_map *map, int fd);
+void			check_if_map_is_surrounded(t_map *map);
 int				check_player_spawning_pos(t_map *map);
 int				parse_colors(t_map *map);
 int				*map_count(t_map *map);

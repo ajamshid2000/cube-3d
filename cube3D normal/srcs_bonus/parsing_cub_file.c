@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_cub_file.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
+/*   By: ajamshid <ajamshid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 19:29:28 by ajamshid          #+#    #+#             */
-/*   Updated: 2024/11/04 22:32:23 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/26 19:44:28 by ajamshid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,8 @@
 
 int	set_map_line(t_map *map, char *line, int i)
 {
-	static int	j = 0;
-
-	if (!ft_strncmp(&line[i], "1", 1) || !ft_strncmp(&line[i], "0", 1) || i > 0)
+	if (!ft_strncmp(&line[i], "1", 1) || !ft_strncmp(&line[i], "0", 1))
 	{
-		if (j == 1)
-			return (1);
 		if (!map->map && (!ft_strncmp(&line[i], "1", 1) || !ft_strncmp(&line[i],
 					"0", 1)))
 			map->map = ft_strdup(line);
@@ -29,8 +25,8 @@ int	set_map_line(t_map *map, char *line, int i)
 		if (!map->map)
 			return (1);
 	}
-	else if (map->map && i == 0 && line[i] == '\n')
-		j = 1;
+	else if (map->map && line[i] == '\n')
+		return (1);
 	else if (!map->map && line[i] == '\n')
 		return (0);
 	else
@@ -88,23 +84,26 @@ int	extract_from_cub_file(t_map *map, int fd)
 {
 	char	*map_line;
 	int		i;
+	int		j;
 
+	j = 0;
 	map_line = get_next_line(fd);
 	while (map_line)
 	{
 		i = 0;
-		while (map_line[i] == ' ')
+		while (map_line[i] == ' ' && j == 0)
 			i++;
-		if (map_line[i] != '\0' && assign_to_map(map, map_line))
+		if (j == 0 && map_line[i] != '\0' && assign_to_map(map, map_line))
 		{
 			ft_printf("Error\nthere is unknown identifier or more of ");
 			ft_printf("the same in .cub or there is a newline in map\n");
-			close(fd);
-			clean_exit(map);
+			j = 1;
 		}
 		free(map_line);
 		map_line = get_next_line(fd);
 	}
+	if (j)
+		clean_exit(map);
 	return (0);
 }
 

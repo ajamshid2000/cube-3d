@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_colors.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
+/*   By: ajamshid <ajamshid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 23:05:02 by abdul-rashe       #+#    #+#             */
-/*   Updated: 2024/11/04 01:07:51 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/26 19:16:19 by ajamshid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,9 @@ int	*map_count(t_map *map)
 	while (map->map_2d[i])
 	{
 		j = 0;
-		while (map->map_2d[i][j])
+		while (map->map_2d[i][j] && map->map_2d[i][j] != '\n')
 			j++;
-		map_count[i] = j;
+		map_count[i] = j - 1;
 		i++;
 	}
 	return (map_count);
@@ -84,5 +84,26 @@ void	check_if_all_is_set(t_map *map)
 		ft_printf("Error\nthe .cub file does not contain ");
 		ft_printf("all of the neccessary info\n");
 		clean_exit(map);
+	}
+}
+
+void	check_if_map_is_surrounded(t_map *map)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	j = 0;
+	while (map->map_2d[i])
+	{
+		j = 0;
+		while (map->map_2d[i][j] && map->map_2d[i][j] == ' ')
+			j++;
+		if (map->map_2d[i][j] == '0')
+		{
+			ft_printf("Error\nmap is not closed\n");
+			clean_exit(map);
+		}
+		i++;
 	}
 }

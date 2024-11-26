@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialization.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
+/*   By: ajamshid <ajamshid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/03 23:06:07 by abdul-rashe       #+#    #+#             */
-/*   Updated: 2024/11/04 01:19:01 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/26 19:43:18 by ajamshid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,11 @@ int	initialize_map(t_map *map, int fd)
 	map->sky_color = NULL;
 	map->ground_color = NULL;
 	map->map = NULL;
+	map->map_2d = NULL;
 	map->player_dir = 0;
 	map->player_pos_x = 0;
 	map->player_pos_y = 0;
+	map->map_last = 0;
 	map->cub_fd = fd;
 	return (0);
 }

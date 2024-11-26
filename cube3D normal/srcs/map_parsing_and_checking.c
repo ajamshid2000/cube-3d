@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   map_parsing_and_checking.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
+/*   By: ajamshid <ajamshid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 22:58:18 by abdul-rashe       #+#    #+#             */
-/*   Updated: 2024/10/31 23:50:26 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/26 19:31:30 by ajamshid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	find(char **tab, int x, int y, t_map *map)
 	int	i;
 
 	i = 0;
-	while (tab[x][i])
+	while (x >= 0 && tab[x][i])
 		i++;
 	if (x < 0 || tab[x] == NULL || y < 0 || y > i || tab[x][y] == '\0'
 		|| tab[x][y] == '\n')
@@ -60,7 +60,8 @@ int	check_for_spawning_pos_and_dir(t_map *map, char **map_temp, int x)
 			break ;
 		x++;
 	}
-	map_temp[x][y] = '0';
+	if (map->map_2d[x])
+		map_temp[x][y] = '0';
 	return (x);
 }
 
@@ -128,17 +129,16 @@ int	check_player_spawning_pos(t_map *map)
 	char	**map_temp;
 
 	map->map_2d = ft_split(map->map, '\n');
+	check_if_map_is_surrounded(map);
 	map_temp = ft_split(map->map, '\n');
-	y = 0;
-	x = 0;
-	x = check_for_spawning_pos_and_dir(map, map_temp, x);
+	x = check_for_spawning_pos_and_dir(map, map_temp, 0);
 	if (!map->map_2d[x])
 	{
 		ft_printf("Error\npos not found, it must be N, S, E, or W\n");
-		free(map_temp);
+		free_table(map_temp);
 		clean_exit(map);
 	}
-	check_for_extra_characters_in_map(map, map_temp, x, y);
+	check_for_extra_characters_in_map(map, map_temp, 0, 0);
 	x = 0;
 	while (map_temp[x])
 	{

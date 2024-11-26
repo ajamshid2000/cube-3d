@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cube3d.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abdul-rashed <abdul-rashed@student.42.f    +#+  +:+       +#+        */
+/*   By: ajamshid <ajamshid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:26:34 by ajamshid          #+#    #+#             */
-/*   Updated: 2024/11/04 01:17:00 by abdul-rashe      ###   ########.fr       */
+/*   Updated: 2024/11/26 19:25:02 by ajamshid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,8 @@ typedef struct s_map
 	int			player_pos_x;
 	int			player_pos_y;
 
+	int			map_last;
+
 	int			cub_fd;
 
 }				t_map;
@@ -125,6 +127,7 @@ int				parse_cub_file(t_map *map, char *map_cub);
 char			*get_next_line(int fd);
 int				parse_colors(t_map *map);
 void			check_if_all_is_set(t_map *map);
+void			check_if_map_is_surrounded(t_map *map);
 int				destroy_image_and_clean_exit(t_game *game);
 
 void			clean_exit(t_map *map);
