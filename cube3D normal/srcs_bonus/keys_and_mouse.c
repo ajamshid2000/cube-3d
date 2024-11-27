@@ -6,7 +6,7 @@
 /*   By: ajamshid <ajamshid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/03 23:50:14 by abdul-rashe       #+#    #+#             */
-/*   Updated: 2024/11/17 14:19:43 by ajamshid         ###   ########.fr       */
+/*   Updated: 2024/11/27 20:21:59 by ajamshid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ void	turning_and_sprite(t_game *game, int a)
 	static int	move_dir = 1;
 
 	if (a < 0 || game->keys[1])
-		turn_left(game, fabs((double)a / 30.0));
+		turn_left(game, fabs((double)a / 90.0));
 	if (a > 0 || game->keys[0])
-		turn_right(game, fabs((double)a / 30.0));
+		turn_right(game, fabs((double)a / 90.0));
 	if (game->keys[97] || game->keys[100] || game->keys[119] || game->keys[115])
 	{
 		if (move_times == 8)
@@ -40,14 +40,21 @@ void	move_player(t_game *game)
 	double	move_speed;
 	int		a;
 	int		b;
+	int		i;
 
+	i = 0;
+	a = 0;
 	if (!game->esc)
 	{
-		mlx_mouse_get_pos(game->mlx_ptr, game->win_ptr, &a, &b);
-		a = a - 400;
+		while (!a)
+		{
+			mlx_mouse_get_pos(game->mlx_ptr, game->win_ptr, &a, &b);
+			a = a - 400;
+			if (i == 300)
+				break ;
+			i++;
+		}
 	}
-	else
-		a = 0;
 	move_speed = 0.05;
 	if (game->keys[119] || game->keys[115])
 		move_back_or_forward(game, move_speed);

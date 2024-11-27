@@ -6,7 +6,7 @@
 /*   By: ajamshid <ajamshid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 23:05:02 by abdul-rashe       #+#    #+#             */
-/*   Updated: 2024/11/26 19:16:19 by ajamshid         ###   ########.fr       */
+/*   Updated: 2024/11/27 20:10:38 by ajamshid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,10 @@ int	*map_count(t_map *map)
 	i = 0;
 	while (map->map_2d[i])
 		i++;
+	map->map_height = i;
 	map_count = (int *)malloc(sizeof(int) * i);
+	if (!map_count)
+		return (0);
 	i = 0;
 	while (map->map_2d[i])
 	{

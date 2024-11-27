@@ -6,7 +6,7 @@
 /*   By: ajamshid <ajamshid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 15:04:47 by abdul-rashe       #+#    #+#             */
-/*   Updated: 2024/11/26 19:58:39 by ajamshid         ###   ########.fr       */
+/*   Updated: 2024/11/27 20:25:50 by ajamshid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,14 +52,14 @@ void	calculate_and_draw_minimap(t_game *game, double x, double y,
 		cam_y = -1.0 * cam_y;
 		i = game->player_x + 8 * cam_y;
 		j = game->player_y + 8 * cam_x;
-		if (i < 0.0 || j < 0.0 || (int)i - 9 > ((int) sizeof(game->map_co))
-			|| (int)j > game->map_co[(int)i])
-			set_pixel_color(game, x, y, 0x666666);
+		if ((int)i < 0 || (int)j < 0
+			|| (int)i > (game->map_structure->map_height - 1)
+			|| (int)j > game->map_co[(int)i] || ((int)((i - game->player_x) * (i
+					- game->player_x) * 15 + (j - game->player_y) * (j
+					- game->player_y) * 15) == 1))
+			set_pixel_color(game, x, y, 0x0);
 		else if (game->map[(int)i][(int)j] == '1')
 			set_pixel_color(game, x, y, 0xffffff);
-		else if ((int)((i - game->player_x) * (i - game->player_x) * 15 + (j
-				- game->player_y) * (j - game->player_y) * 15) == 1)
-			set_pixel_color(game, x, y, 0x0);
 		else if (game->map[(int)i][(int)j] == '0')
 			set_pixel_color(game, x, y, 0x00ff00);
 		else
@@ -89,7 +89,7 @@ int	main_loop(t_game *game)
 	x = 0;
 	mlx_put_image_to_window(game->mlx_ptr, game->win_ptr, game->img.img_ptr, 0,
 		0);
-	usleep(20000);
+	usleep(10000);
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: ajamshid <ajamshid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:26:34 by ajamshid          #+#    #+#             */
-/*   Updated: 2024/11/26 19:43:43 by ajamshid         ###   ########.fr       */
+/*   Updated: 2024/11/27 20:09:14 by ajamshid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ typedef struct s_map
 
 	char		*map;
 	char		**map_2d;
+	int			map_height;
 
 	char		player_dir;
 	int			player_pos_x;
