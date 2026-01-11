@@ -1,13 +1,13 @@
 
-NO ./north_wall.xpm
+NO ./images/north_wall.xpm
 
 
-SO      ./south_wall.xpm
+SO      ./images/south_wall.xpm
 
-WE  ./west_wall.xpm
+WE  ./images/west_wall.xpm
 
 F 220,100,0
-EA ./east_wall.xpm
+EA ./images/east_wall.xpm
 
 C 220,100,0
 
@@ -41,5 +41,3 @@ C 220,100,0
 11111111111111111111111111111
 11111111111111111111111111111
 11111111111111111111111111111
-
-
