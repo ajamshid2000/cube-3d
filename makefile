@@ -34,7 +34,7 @@ $(BONUS): $(BOBJS)
 clean:
 	rm -f $(OBJS)
 	rm -f $(BOBJS)
-	@make -s -C ./minilibx-linux clean
+	rm -rf minilibx-linux
 	@make -s -C ./libftprintf clean
 	@make -s -C ./libft clean
 
